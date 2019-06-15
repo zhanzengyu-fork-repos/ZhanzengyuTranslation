@@ -90,7 +90,7 @@ database.close();
 java.lang.IllegalStateException: attempt to re-open an already-closed object: SQLiteDatabase
 ```
 
-因为我们只使用了一个数据库连接，*Thread1* 和 *Thread2* 的 `getDatabase()` 方法都会返回同一个 `SQLiteDatabase` 对象实例。可能发生的场景是 *Thread1* 关闭了数据库，然而 *Thread2* 还在使用它。这也就是为什么我们会有 `IllegalStateException` 的奔溃的原因。
+由于我们只使用了一个数据库连接，*Thread1* 和 *Thread2* 的 `getDatabase()` 方法都会返回同一个 `SQLiteDatabase` 对象实例。可能发生的场景是 *Thread1* 关闭了数据库，然而 *Thread2* 还在使用它。这也就是为什么我们会有 `IllegalStateException` 的奔溃的原因。
 
 我们需要确保没有人正在使用数据库，这个时候我们才可以关闭它。[stackoveflow](http://stackoverflow.com/) 上有人推荐永远不要关闭你的 *SQLiteDatabase*。这会让你看到下面的 logcat 信息。所以我一点也不认为这是一个好的想法。
 
@@ -100,7 +100,7 @@ Caused by: java.lang.IllegalStateException: SQLiteDatabase created and never clo
 ```
 实战例子
 
-一个可能的解决方法是使用计数器跟踪打开/关闭的数据库连接。
+一种可能的解决方案是使用计数器跟踪打开/关闭的数据库连接。
 ```
 public class DatabaseManager {
 
@@ -156,3 +156,5 @@ DatabaseManager.getInstance().closeDatabase(); // correct way
 对于 `closeDatabase()` 方法来说也是一样的。每次我们调用这个方法的时候，计数器在减少，当减为 0 的时候，我们关闭数据库连接。
 
 现在你能够使用你的数据库并且确保是线程安全的。
+
+
