@@ -30,11 +30,11 @@ public class DatabaseHelper extends SQLiteOpenHelper { ... }
 android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5)
 ```
 
-产生这个错误的原因是因为，每次你创建新的 SQLiteOpenHelper 对象，实际上你创建了新的数据库连接。如果你尝试从不同的连接同时对数据库写入数据，其中一个会失败。
+产生这个错误的原因是因为，每次你创建新的 `SQLiteOpenHelper` 对象，实际上你创建了新的数据库连接。如果你尝试从不同的连接同时对数据库写入数据，其中一个会失败。
 
 >为了在多线程使用数据库，我们要确保只使用一个数据库连接。
 
-让我们构造单例类 DatabaseManager，它会持有并返回单个 SQLiteOpenHelper 对象。
+让我们构造单例类 `DatabaseManager`，它会持有并返回单个 `SQLiteOpenHelper` 对象。
 
 ```
 public class DatabaseManager {
@@ -90,9 +90,9 @@ database.close();
 java.lang.IllegalStateException: attempt to re-open an already-closed object: SQLiteDatabase
 ```
 
-因为我们只使用了一个数据库连接，Thread1 和 Thread2 的 getDatabase() 方法都会返回同一个 SQLiteDatabase 对象实例。可能发生的场景是 Thread1 关闭了数据库，然而 Thread2 还在使用它。这也就是为什么我们会有 IllegalStateException 的奔溃的原因。
+因为我们只使用了一个数据库连接，*Thread1* 和 *Thread2* 的 `getDatabase()` 方法都会返回同一个 `SQLiteDatabase` 对象实例。可能发生的场景是 *Thread1* 关闭了数据库，然而 *Thread2* 还在使用它。这也就是为什么我们会有 `IllegalStateException` 的奔溃的原因。
 
-我们需要确保没有人正在使用数据库，这个时候我们才可以关闭它。[stackoveflow](http://stackoverflow.com/) 上有人推荐永远不要关闭你的 SQLiteDatabase。这会让你看到下面的 logcat 信息。所以我一点也不认为这是一个好的想法。
+我们需要确保没有人正在使用数据库，这个时候我们才可以关闭它。[stackoveflow](http://stackoverflow.com/) 上有人推荐永远不要关闭你的 *SQLiteDatabase*。这会让你看到下面的 logcat 信息。所以我一点也不认为这是一个好的想法。
 
 ```
 Leak found
@@ -151,8 +151,8 @@ database.insert(...);
 DatabaseManager.getInstance().closeDatabase(); // correct way
 ```
 
-每当你需要使用数据库的时候你应该调用 DatabaseManager 类的 openDatabase() 方法。在这个方法里面，我们有一个计数器，用来表明数据库打开的次数。如果计数为 1，意味着我们需要创建新的数据库连接，否则，数据库连接已经建立。
+每当你需要使用数据库的时候你应该调用 `DatabaseManager` 类的 `openDatabase()` 方法。在这个方法里面，我们有一个计数器，用来表明数据库打开的次数。如果计数为 1，意味着我们需要创建新的数据库连接，否则，数据库连接已经建立。
 
-对于 closeDatabase() 方法来说也是一样的。每次我们调用这个方法的时候，计数器在减少，当减为 0 的时候，我们关闭数据库连接。
+对于 `closeDatabase()` 方法来说也是一样的。每次我们调用这个方法的时候，计数器在减少，当减为 0 的时候，我们关闭数据库连接。
 
 现在你能够使用你的数据库并且确保是线程安全的。
