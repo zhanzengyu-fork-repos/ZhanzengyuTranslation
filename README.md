@@ -4,7 +4,7 @@
 
 ## Android
 
-[并发数据库访问](https://github.com/nesger/Translation/Android/concurrent_database_access_zh-CN.md)
+[并发数据库访问](https://github.com/nesger/Translation/blob/master/Android/concurrent_database_access_zh-CN.md)
 
-[Concurrent database access](https://github.com/nesger/Translation/Android/concurrent_database_access.md)
+[Concurrent database access](https://github.com/nesger/Translation/blob/master/Android/concurrent_database_access.md)
 
